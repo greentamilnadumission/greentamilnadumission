@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="color-scheme" content="light dark">
+  <base href="/schemes/">
+  <title>GTM Scheme Dashboard</title>
+  <link rel="icon" href="img/gtm-logo.png" type="image/png">
+  <link rel="stylesheet" href="vendor/leaflet/leaflet.css">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <!-- Sign in -->
+  <main id="login-view" class="login" hidden>
+    <header class="login-header">
+      <span class="brand-logo-wrap"><img class="brand-logo" src="img/tn-emblem.png" alt="Government of Tamil Nadu emblem" hidden><img class="brand-logo" src="img/gtm-logo.png" alt="Pasumai Thamizhagam (Green Tamil Nadu Mission) logo" hidden><svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true"><path d="M16 29V14M16 18c-6 0-10-4-10-11 7 0 10 4 10 11Zm0-3c0-6 3-10 10-10 0 7-3 10-10 10Z"/></svg></span>
+      <span>Green Tamil Nadu Mission</span>
+    </header>
+    <section class="login-panel" aria-labelledby="login-title">
+      <h1 id="login-title">Scheme planting dashboard</h1>
+      <p class="login-lede">Sign in with the login ID and password issued to your scheme. You'll see the plantings your scheme has geotagged, district by district.</p>
+
+      <form id="login-form" class="login-form" autocomplete="on" novalidate>
+        <label for="login-id">Login ID</label>
+        <input id="login-id" name="username" autocomplete="username" autocapitalize="characters" spellcheck="false" placeholder="GTM-XXXX" required>
+        <label for="login-password">Password</label>
+        <div class="password-field">
+          <input id="login-password" name="password" type="password" autocomplete="current-password" required>
+          <button type="button" id="toggle-password" class="text-button" aria-controls="login-password" aria-pressed="false">Show</button>
+        </div>
+        <p id="login-error" class="form-error" role="alert" hidden></p>
+        <button type="submit" id="login-submit" class="primary-button">Sign in</button>
+        <a href="/" class="text-button choose-link">&larr; Choose Departments or Schemes</a>
+      </form>
+      <p class="login-foot">Lost your login? Contact the Green Tamil Nadu Mission office.</p>
+    </section>
+    <figure class="login-art" aria-hidden="true">
+      <svg viewBox="0 0 400 520" preserveAspectRatio="xMidYMid slice" id="login-art-svg"></svg>
+    </figure>
+  </main>
+
+  <!-- Dashboard -->
+  <div id="app-view" class="app" hidden>
+    <header class="topbar">
+      <div class="topbar-title">
+        <span class="brand-logo-wrap"><img class="brand-logo" src="img/tn-emblem.png" alt="Government of Tamil Nadu emblem" hidden><img class="brand-logo" src="img/gtm-logo.png" alt="Pasumai Thamizhagam (Green Tamil Nadu Mission) logo" hidden><svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true"><path d="M16 29V14M16 18c-6 0-10-4-10-11 7 0 10 4 10 11Zm0-3c0-6 3-10 10-10 0 7-3 10-10 10Z"/></svg></span>
+        <div>
+          <p class="topbar-org">Green Tamil Nadu Mission</p>
+          <h1 id="scheme-title">Scheme</h1>
+        </div>
+      </div>
+      <div class="topbar-actions">
+        <p id="updated-at" class="updated-at"></p>
+        <button type="button" id="refresh-data" class="ghost-button" title="Check for newly published data">Refresh data</button>
+        <button type="button" id="download-csv" class="ghost-button">Download CSV</button>
+        <button type="button" id="sign-out" class="ghost-button">Sign out</button>
+      </div>
+    </header>
+
+    <section class="filters" aria-label="Filters">
+      <button type="button" id="toggle-ledger" class="ledger-toggle" aria-controls="ledger" aria-expanded="true">
+        <svg viewBox="0 0 20 20" aria-hidden="true"><rect x="2.5" y="3.5" width="15" height="13" rx="2"/><path d="M7.5 3.5v13"/></svg>
+        <span id="toggle-ledger-text">Hide districts</span>
+      </button>
+      <div class="year-chips" role="group" aria-label="Plantation year" id="year-chips"></div>
+      <div class="filter-selects">
+        <label class="select-wrap" id="scheme-filter-wrap" hidden>
+          <span>Scheme</span>
+          <select id="filter-scheme"></select>
+        </label>
+        <label class="select-wrap">
+          <span>Taluk / block</span>
+          <select id="filter-area"></select>
+        </label>
+        <label class="select-wrap">
+          <span>Species</span>
+          <select id="filter-species"></select>
+        </label>
+        <label class="select-wrap">
+          <span>Land type</span>
+          <select id="filter-land"></select>
+        </label>
+        <label class="select-wrap date-wrap">
+          <span>From date</span>
+          <input type="date" id="filter-from" aria-describedby="date-help">
+        </label>
+        <label class="select-wrap date-wrap">
+          <span>To date</span>
+          <input type="date" id="filter-to" aria-describedby="date-help">
+        </label>
+        <button type="button" id="clear-filters" class="text-button" hidden>Clear all filters</button>
+      </div>
+    </section>
+
+    <div class="layout" id="layout">
+      <aside class="ledger" id="ledger" aria-labelledby="ledger-title">
+        <div class="ledger-head">
+          <h2 id="ledger-title">Districts</h2>
+          <button type="button" class="ledger-close" id="close-ledger" aria-label="Hide the district list" title="Hide the district list">
+            <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M5 5l10 10M15 5L5 15"/></svg>
+          </button>
+        </div>
+        <div class="ledger-sort" role="group" aria-label="Sort districts">
+          <button type="button" data-sort="value" aria-pressed="true">Most seedlings</button>
+          <button type="button" data-sort="name" aria-pressed="false">A to Z</button>
+        </div>
+        <input type="search" id="ledger-search" class="ledger-search" placeholder="Find a district" aria-label="Find a district">
+        <ol id="ledger-list" class="ledger-list"></ol>
+      </aside>
+
+      <main class="content" id="content">
+        <section class="overview" aria-labelledby="overview-title">
+          <div class="overview-head">
+            <div>
+              <h2 id="overview-title">All districts</h2>
+              <p id="overview-sub" class="overview-sub"></p>
+            </div>
+            <a id="open-records" class="primary-button records-link" href="records.html">View planting records with contact details</a>
+          </div>
+          <p id="date-help" class="date-note" hidden></p>
+          <p id="overview-empty" class="overview-empty" hidden></p>
+          <div id="kpis" class="kpis" aria-live="polite"></div>
+        </section>
+
+        <div class="panels">
+          <section class="panel">
+            <header><h3>Seedlings by plantation year</h3><p>Select a bar to filter by that year.</p></header>
+            <div class="chart-box"><canvas id="chart-year" role="img"></canvas></div>
+          </section>
+
+          <section class="panel">
+            <header><h3>Plantings by month</h3><p>Geotagged entries that carry a planting date.</p></header>
+            <div class="chart-box"><canvas id="chart-month" role="img"></canvas></div>
+            <p class="empty" id="chart-month-empty" hidden>No dated entries for this selection.</p>
+          </section>
+
+          <section class="panel panel-tall">
+            <header><h3 id="area-title">Taluks and blocks</h3><p>Top 5 by seedlings. Select a bar to filter.</p></header>
+            <div class="chart-box"><canvas id="chart-area" role="img"></canvas></div>
+          </section>
+
+          <section class="panel panel-tall">
+            <header><h3>Species planted</h3><p>Top 5 by seedlings. Select a bar to filter.</p></header>
+            <div class="chart-box"><canvas id="chart-species" role="img"></canvas></div>
+          </section>
+
+          <section class="panel panel-wide" id="land-panel">
+            <header><h3>Land type</h3><p>Seedlings by the type of land planted.</p></header>
+            <div class="chart-box"><canvas id="chart-land" role="img"></canvas></div>
+          </section>
+
+          <section class="panel panel-wide">
+            <header>
+              <h3>Geotagged plantings</h3>
+              <p id="map-sub">Each dot is a geotagged planting. Select a dot for details.</p>
+            </header>
+            <div id="map" class="map" role="region" aria-label="Map of geotagged plantings"></div>
+          </section>
+
+          <section class="panel panel-wide">
+            <header class="table-head">
+              <div>
+                <h3 id="table-title">Districts</h3>
+                <p id="table-sub"></p>
+              </div>
+              <input type="search" id="table-search" class="table-search" placeholder="Search this table" aria-label="Search this table">
+            </header>
+            <div class="table-scroll">
+              <table class="data-table" id="data-table">
+                <thead></thead>
+                <tbody></tbody>
+              </table>
+            </div>
+            <p class="table-note" id="table-note"></p>
+          </section>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+
+  <div id="loading" class="loading" role="status" aria-live="polite" hidden>
+    <div class="loading-card">
+      <svg class="loading-mark" viewBox="0 0 32 32" aria-hidden="true"><path d="M16 29V14M16 18c-6 0-10-4-10-11 7 0 10 4 10 11Zm0-3c0-6 3-10 10-10 0 7-3 10-10 10Z"/></svg>
+      <p class="loading-title" id="loading-text">Opening your scheme's data…</p>
+      <div class="loading-bar"></div>
+      <p class="loading-note">This can take 20 to 30 seconds, especially on a slow connection. Please keep this page open.</p>
+      <p class="loading-elapsed" id="loading-elapsed" aria-hidden="true"></p>
+    </div>
+  </div>
+
+  <script src="vendor/chart.umd.min.js" defer></script>
+  <script src="vendor/leaflet/leaflet.js" defer></script>
+  <script src="js/format.js" defer></script>
+  <script src="js/brand.js" defer></script>
+  <script src="js/vault.js" defer></script>
+  <script src="js/dotlayer.js" defer></script>
+  <script src="js/app.js" defer></script>
+</body>
+</html>

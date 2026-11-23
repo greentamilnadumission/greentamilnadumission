@@ -1,0 +1,41 @@
+name: Refresh live data
+
+# Every hour this makes a tiny commit ("Refresh live data", touching only the .refresh file).
+# Vercel deploys on every commit; for these commits Vercel first checks (scripts/should-build.mjs)
+# whether gtm-data has a newer export than the live site, and skips the build if not.
+# No secrets are needed here — Vercel uses its own GTM_DATA_TOKEN variable.
+
+on:
+  schedule:
+    - cron: '17 * * * *'
+  workflow_dispatch:
+    inputs:
+      force:
+        description: 'Rebuild even if the export has not changed'
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+concurrency:
+  group: refresh
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Commit the hourly refresh marker
+        run: |
+          date -u +"%Y-%m-%dT%H:%M:%SZ" > .refresh
+          git config user.name "gtm-refresh-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add .refresh
+          if [ "${{ inputs.force }}" = "true" ]; then MSG="Refresh live data (forced)"; else MSG="Refresh live data"; fi
+          git commit -m "$MSG"
+          git push
+          echo "Pushed \"$MSG\". Vercel will deploy if gtm-data has a newer export." | tee -a "$GITHUB_STEP_SUMMARY"

@@ -1,0 +1,16 @@
+{
+  "name": "gtm-scheme-dashboard",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Green Tamil Nadu Mission — scheme-wise geotagged planting dashboard",
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "update": "node ../admin/scripts/update-scheme-local.mjs",
+    "scheme-credentials": "node ../admin/scripts/generate-scheme-credentials.mjs",
+    "build:data": "node ../admin/scripts/build-scheme-data.mjs --input merged.csv.gz",
+    "serve": "node ../admin/scripts/serve.mjs"
+  }
+}

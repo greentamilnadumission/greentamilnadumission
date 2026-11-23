@@ -1,0 +1,8 @@
+{
+  "_comment": "Login IDs and display names for schemes. Edit this file to add schemes; the build fails if a scheme has no password in the credentials.",
+  "admin": { "id": "GTM-ADMIN", "name": "All schemes" },
+  "schemes": [
+    { "id": "GTM-SCHEME-1", "name": "Scheme 1" },
+    { "id": "GTM-SCHEME-2", "name": "Scheme 2" }
+  ]
+}

@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="color-scheme" content="light dark">
+  <title>Planting records | GTM Dashboard</title>
+  <link rel="icon" href="img/gtm-logo.png" type="image/png">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body class="records-body">
+
+  <div id="rp-view" hidden>
+    <header class="topbar">
+      <div class="topbar-title">
+        <span class="brand-logo-wrap"><img class="brand-logo" src="img/tn-emblem.png" alt="Government of Tamil Nadu emblem" hidden><img class="brand-logo" src="img/gtm-logo.png" alt="Pasumai Thamizhagam (Green Tamil Nadu Mission) logo" hidden><svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true"><path d="M16 29V14M16 18c-6 0-10-4-10-11 7 0 10 4 10 11Zm0-3c0-6 3-10 10-10 0 7-3 10-10 10Z"/></svg></span>
+        <div>
+          <p class="topbar-org">Green Tamil Nadu Mission</p>
+          <p class="topbar-scheme" id="rp-scheme">Scheme</p>
+        </div>
+      </div>
+      <div class="topbar-actions">
+        <p id="rp-updated" class="updated-at"></p>
+        <a href="index.html" class="ghost-button" id="rp-back">Back to dashboard</a>
+        <button type="button" id="rp-sign-out" class="ghost-button">Sign out</button>
+      </div>
+    </header>
+
+    <main class="rp">
+      <div class="rp-head">
+        <div>
+          <h1 id="rp-title">Planting records</h1>
+          <p class="rp-lede">Every planting entry reported from the field, with the names and phone numbers of the people responsible. Select a row to see the full record.</p>
+        </div>
+        <button type="button" class="primary-button rp-export" id="rp-export">Export to Excel (CSV)</button>
+      </div>
+
+      <section class="rp-filters" aria-label="Filter the records">
+        <label class="select-wrap"><span>District</span><select id="rp-district"></select></label>
+        <label class="select-wrap" id="rp-scheme-wrap" hidden><span>Scheme</span><select id="rp-filter-scheme"></select></label>
+        <label class="select-wrap"><span>Taluk / block</span><select id="rp-filter-area"></select></label>
+        <label class="select-wrap"><span>Plantation year</span><select id="rp-filter-year"></select></label>
+        <label class="select-wrap"><span>Species</span><select id="rp-filter-species"></select></label>
+        <label class="select-wrap"><span>Land type</span><select id="rp-filter-land"></select></label>
+        <label class="select-wrap date-wrap"><span>From date</span><input type="date" id="rp-from" aria-describedby="rp-date-note"></label>
+        <label class="select-wrap date-wrap"><span>To date</span><input type="date" id="rp-to" aria-describedby="rp-date-note"></label>
+        <label class="select-wrap rp-search-wrap"><span>Search</span><input type="search" id="rp-search" placeholder="Name, mobile number, village…"></label>
+        <button type="button" id="rp-clear" class="text-button" hidden>Clear filters</button>
+      </section>
+
+      <p id="rp-date-note" class="date-note" hidden></p>
+      <div class="kpis kpis-compact" id="rp-kpis" aria-live="polite"></div>
+
+      <section class="rp-table" aria-labelledby="rp-table-title">
+        <div class="rp-table-head">
+          <h2 id="rp-table-title">Records</h2>
+          <label class="rp-page-size">Rows per page
+            <select id="rp-page-size"><option>50</option><option selected>100</option><option>200</option></select>
+          </label>
+        </div>
+        <div class="table-scroll rp-scroll" id="rp-scroll">
+          <table class="data-table records-table" id="rp-table">
+            <thead></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <p class="empty-note" id="rp-empty" hidden></p>
+        <nav class="pager" id="rp-pager" aria-label="Pages">
+          <button type="button" class="ghost-button" data-page="first">First</button>
+          <button type="button" class="ghost-button" data-page="prev">Previous</button>
+          <span id="rp-range" aria-live="polite"></span>
+          <button type="button" class="ghost-button" data-page="next">Next</button>
+          <button type="button" class="ghost-button" data-page="last">Last</button>
+        </nav>
+      </section>
+    </main>
+  </div>
+
+  <dialog id="rp-dialog" class="record-dialog" aria-labelledby="rp-dialog-title">
+    <div class="record-dialog-head">
+      <h2 id="rp-dialog-title">Planting record</h2>
+      <button type="button" class="ghost-button" id="rp-dialog-close">Close</button>
+    </div>
+    <div id="rp-dialog-body"></div>
+  </dialog>
+
+  <div id="loading" class="loading" role="status" aria-live="polite" hidden>
+    <div class="loading-card">
+      <svg class="loading-mark" viewBox="0 0 32 32" aria-hidden="true"><path d="M16 29V14M16 18c-6 0-10-4-10-11 7 0 10 4 10 11Zm0-3c0-6 3-10 10-10 0 7-3 10-10 10Z"/></svg>
+      <p class="loading-title" id="loading-text">Opening the planting records…</p>
+      <div class="loading-bar"></div>
+      <p class="loading-note">This can take 20 to 30 seconds, especially on a slow connection. Please keep this page open.</p>
+      <p class="loading-elapsed" id="loading-elapsed" aria-hidden="true"></p>
+    </div>
+  </div>
+
+  <script src="js/format.js" defer></script>
+  <script src="js/brand.js" defer></script>
+  <script src="js/vault.js" defer></script>
+  <script src="js/records.js" defer></script>
+</body>
+</html>

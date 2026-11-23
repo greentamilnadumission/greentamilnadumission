@@ -1,0 +1,49 @@
+{
+  "_comment": "Login IDs, display names and the raw 'Gov Department Type' values that map to each department. Matching ignores case, spacing and punctuation. Edit this file to add departments or aliases; the build fails if a department has no password in the credentials.",
+  "admin": { "id": "GTM-ADMIN", "name": "All departments" },
+  "departments": [
+    { "id": "GTM-ADTW",    "name": "Adi Dravidar and Tribal Welfare",                 "match": ["ADI DRAVIDA AND TRIBAL WELFARE"] },
+    { "id": "GTM-AHD",     "name": "Animal Husbandry",                                "match": ["ANIMAL HUSBANDRY DEPARTMENT"] },
+    { "id": "GTM-CFCP",    "name": "Co-operation, Food and Consumer Protection",      "match": ["Co-operation, Food and Consumer Protection"] },
+    { "id": "GTM-AGRI",    "name": "Agriculture",                                     "match": ["DEPARTMENT OF AGRICULTURE"], "includeSource": "Agriculture Department" },
+    { "id": "GTM-SPORTS",  "name": "District Sports Office",                          "match": ["DISTRICT SPORTS OFFICE"] },
+    { "id": "GTM-DTCP",    "name": "Town and Country Planning",                       "match": ["District Town and Country Planning"] },
+    { "id": "GTM-EMP",     "name": "Employment",                                      "match": ["EMPLOYMENT"] },
+    { "id": "GTM-FRS",     "name": "Fire and Rescue Services",                        "match": ["FIRE AND RESCUE SERVICES"] },
+    { "id": "GTM-HHTK",    "name": "Handloom, Handicrafts, Textiles and Khadi",       "match": ["HANDLOOM, HANDICRAFTS,TEXTILES AND KHADI"] },
+    { "id": "GTM-HFW",     "name": "Health and Family Welfare",                       "match": ["Health and Family Welfare Department"] },
+    { "id": "GTM-HMP",     "name": "Highways and Minor Ports",                        "match": ["Highways and Minor Ports Department"] },
+    { "id": "GTM-HRCE",    "name": "Hindu Religious and Charitable Endowments",       "match": ["Hindu Religious and Charitable Endowments", "HINDU RELIGIOUS AND CHARITABLE ENDOWMENTS DEPARTMENT TEMPLES"] },
+    { "id": "GTM-HORTI",   "name": "Horticulture",                                    "match": ["Horticulture department"] },
+    { "id": "GTM-HUD",     "name": "Housing and Urban Development",                   "match": ["Housing and Urban Development Department"] },
+    { "id": "GTM-MSME",    "name": "Micro, Small and Medium Enterprises",             "match": ["Micro , Small and Medium Enterprises Department"] },
+    { "id": "GTM-MAWS",    "name": "Municipal Administration and Water Supply",       "match": ["Municipal Administration and Water supplies department"] },
+    { "id": "GTM-NHAI",    "name": "National Highways Authority of India",            "match": ["National Highways Authority of India"] },
+    { "id": "GTM-POLICE",  "name": "Police",                                          "match": ["POLICE"] },
+    { "id": "GTM-PWD",     "name": "Public Works",                                    "match": ["Public Works Department"] },
+    { "id": "GTM-REVENUE", "name": "Revenue Administration and Disaster Management",  "match": ["Revenue Administration and Disaster Management"] },
+    { "id": "GTM-RDPR",    "name": "Rural Development and Panchayat Raj",             "match": ["RURAL DEVELOPMENT AND PANCHAYAT RAJ"] },
+    { "id": "GTM-EDU",     "name": "Education Department",                            "match": ["School Education Department", "Department of General Education"] },
+    { "id": "GTM-TAFCORN", "name": "TAFCORN",                                         "match": ["TAFCORN"] },
+    { "id": "GTM-TNCDW",   "name": "Tamil Nadu Corporation for Development of Women", "match": ["Tamil Nadu Corporation for Development of Women (TNCDW)"] },
+    { "id": "GTM-TNEB",    "name": "Tamil Nadu Electricity Board",                    "match": ["Tamil Nadu Electricity Board"] },
+    { "id": "GTM-TNPCB",   "name": "Tamil Nadu Pollution Control Board",              "match": ["Tamilnadu Pollution Control Board"] },
+    { "id": "GTM-TBGP",    "name": "TBGP",                                            "match": ["TBGP"] },
+    { "id": "GTM-WRD",     "name": "Water Resources",                                 "match": ["Water Resources Department"] }
+  ],
+  "others": {
+    "name": "Others (not matched to a department)",
+    "_comment": "Rows whose Gov Department Type is 'Others' or blank go through keywordRules (Stakeholder Name first, then Contact Name and Officer Name). Rows that match nothing land here and are visible only to GTM-ADMIN."
+  },
+  "keywordRules": [
+    { "pattern": "\\bDRDA\\b|^RD\\b|\\bBDO\\b|PANCHAYAT",                       "department": "GTM-RDPR" },
+    { "pattern": "HORTICULTUR",                                               "department": "GTM-HORTI" },
+    { "pattern": "AGRICULTUR",                                                "department": "GTM-AGRI" },
+    { "pattern": "TAFCORN",                                                   "department": "GTM-TAFCORN" },
+    { "pattern": "HIGHER SECONDARY SCHOOL|\\bDIET\\b|INSTITUTE OF EDUCATION", "department": "GTM-EDU" }
+  ],
+  "exclude": {
+    "_comment": "Rows dropped entirely. Non-government Department Types (NGO, Trust, Private Entity, Public Sector, Others) are always dropped.",
+    "stakeholderOrContact": ["\\bNLC\\b", "^INOMETRICS$", "^TEST( USER)?$"]
+  }
+}
