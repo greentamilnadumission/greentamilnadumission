@@ -1,8 +1,32 @@
 {
-  "_comment": "Login IDs and display names for schemes. Edit this file to add schemes; the build fails if a scheme has no password in the credentials.",
+  "_comment": "Login IDs and display names for schemes. The name must match the Scheme value in the export exactly. Edit this file to add schemes; the build fails if a scheme has no password in the credentials.",
   "admin": { "id": "GTM-ADMIN", "name": "All schemes" },
   "schemes": [
-    { "id": "GTM-SCHEME-1", "name": "Scheme 1" },
-    { "id": "GTM-SCHEME-2", "name": "Scheme 2" }
+    { "id": "GTM-SCH-BDAY", "name": "Birthday Planting" },
+    { "id": "GTM-SCH-NBM", "name": "NATIONAL BAMBOO MISSION" },
+    { "id": "GTM-SCH-GTNM", "name": "Green Tamil Nadu Mission" },
+    { "id": "GTM-SCH-NABARD", "name": "NABARD" },
+    { "id": "GTM-SCH-TNMSGCF", "name": "AGRICULTURE-TNMSGCF" },
+    { "id": "GTM-SCH-TBGPCCR", "name": "TBGPCCR" },
+    { "id": "GTM-SCH-MARAGATHA", "name": "Maragatha Pooncholai" },
+    { "id": "GTM-SCH-INDDAY", "name": "Independence day" },
+    { "id": "GTM-SCH-CAMPA", "name": "CAMPA" },
+    { "id": "GTM-SCH-BIOSHIELD", "name": "Green Tamilnadu Mission - Bio-shields" },
+    { "id": "GTM-SCH-NHAI", "name": "National highways authority of india" },
+    { "id": "GTM-SCH-RKVYAGRI", "name": "Agriculture (RKVY Scheme)" },
+    { "id": "GTM-SCH-CA", "name": "Compensatory Afforestation" },
+    { "id": "GTM-SCH-NHM", "name": "National Horticulture Mission" },
+    { "id": "GTM-SCH-DPR", "name": "DPR" },
+    { "id": "GTM-SCH-NFM", "name": "Nutritional Farming Mission" },
+    { "id": "GTM-SCH-PALMYRA", "name": "Palmyra Development Mission" },
+    { "id": "GTM-SCH-KAVIADP", "name": "KAVIADP" },
+    { "id": "GTM-SCH-RKVYHORTI", "name": "Horticulture (RKVY Scheme)" },
+    { "id": "GTM-SCH-MGNREGS", "name": "GTM - MGNREGS" },
+    { "id": "GTM-SCH-TNRSP2", "name": "TNRSP-II" },
+    { "id": "GTM-SCH-SHDS", "name": "SHDS - State Horticulture Development Scheme" },
+    { "id": "GTM-SCH-CRIDP", "name": "CRIDP - Comprehensive Road infrastructure Development Programme" },
+    { "id": "GTM-SCH-STHWY", "name": "GTM - State Highways" },
+    { "id": "GTM-SCH-TAFCORN", "name": "Replanting in TAFCORN Areas" },
+    { "id": "GTM-SCH-TNSHORE", "name": "TN SHORE" }
   ]
 }
