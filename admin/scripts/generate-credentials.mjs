@@ -31,7 +31,8 @@ function password() {
   return groups.join('-');
 }
 
-const logins = [{ id: config.admin.id, name: config.admin.name }, ...config.departments];
+// The head office login is not a department login: it has its own password (generate-admin-credentials.mjs).
+const logins = [...config.departments];
 const out = {};
 let created = 0;
 for (const l of logins) {

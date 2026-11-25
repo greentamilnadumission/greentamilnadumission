@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="color-scheme" content="light">
+  <title>Head office dashboard | GTM</title>
+  <link rel="icon" href="/schemes/img/gtm-logo.png" type="image/png">
+  <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+
+  <main id="login-view" class="login" hidden>
+    <header class="bar"><span>Green Tamil Nadu Mission</span></header>
+    <section class="panel-login">
+      <h1>Head office dashboard</h1>
+      <p class="lede">Sign in with the head office login ID and password. You'll see the overall department and scheme details.</p>
+      <form id="login-form" novalidate>
+        <label for="login-id">Login ID</label>
+        <input id="login-id" name="username" autocomplete="username" autocapitalize="characters" spellcheck="false" value="GTM-ADMIN" required>
+        <label for="login-password">Password</label>
+        <input id="login-password" name="password" type="password" autocomplete="current-password" required>
+        <p id="login-error" class="error" role="alert" hidden></p>
+        <button type="submit" id="login-submit">Sign in</button>
+      </form>
+    </section>
+  </main>
+
+  <div id="dash" class="dash" hidden>
+    <header class="bar">
+      <div>
+        <p class="org">Green Tamil Nadu Mission · Head office</p>
+        <h1>Overall details</h1>
+      </div>
+      <div class="bar-actions">
+        <p id="updated" class="muted"></p>
+        <button type="button" id="sign-out" class="ghost">Sign out</button>
+      </div>
+    </header>
+
+    <section class="kpis" aria-label="Totals">
+      <div class="kpi"><span>Seedlings planted (departments)</span><strong id="kpi-dept-seedlings">–</strong></div>
+      <div class="kpi"><span>Seedlings planted (schemes)</span><strong id="kpi-scheme-seedlings">–</strong></div>
+      <div class="kpi"><span>Records (departments)</span><strong id="kpi-dept-records">–</strong></div>
+      <div class="kpi"><span>Records (schemes)</span><strong id="kpi-scheme-records">–</strong></div>
+    </section>
+
+    <section class="card" aria-labelledby="dept-title">
+      <h2 id="dept-title">Departments</h2>
+      <p class="muted">All departments, most seedlings first.</p>
+      <div class="table-scroll"><table><thead><tr><th>Department</th><th class="num">Records</th><th class="num">Seedlings</th><th class="num">Share</th></tr></thead><tbody id="dept-rows"></tbody></table></div>
+    </section>
+
+    <section class="card" aria-labelledby="scheme-title">
+      <h2 id="scheme-title">Schemes</h2>
+      <p class="muted">All schemes, most seedlings first.</p>
+      <div class="table-scroll"><table><thead><tr><th>Scheme</th><th class="num">Records</th><th class="num">Seedlings</th><th class="num">Share</th></tr></thead><tbody id="scheme-rows"></tbody></table></div>
+    </section>
+  </div>
+
+  <div id="busy" class="busy" role="status" aria-live="polite" hidden>
+    <p id="busy-text">Opening the head office data…</p>
+  </div>
+
+  <script src="admin.js" defer></script>
+</body>
+</html>

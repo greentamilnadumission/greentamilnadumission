@@ -31,7 +31,8 @@ function password() {
   return groups.join('-');
 }
 
-const logins = [{ id: config.admin.id, name: config.admin.name }, ...config.schemes];
+// The head office login is not a scheme login: it has its own password (generate-admin-credentials.mjs).
+const logins = [...config.schemes];
 const out = {};
 let created = 0;
 for (const l of logins) {

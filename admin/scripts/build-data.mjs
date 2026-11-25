@@ -19,6 +19,7 @@ import zlib from 'node:zlib';
 import crypto from 'node:crypto';
 import { parseCsv } from './lib/csv.mjs';
 import * as C from './lib/clean.mjs';
+import { loadAdminPassword, ADMIN_OUT } from './lib/admin-credentials.mjs';
 
 const ROOT = process.cwd(); // the project folder (departments/ or schemes/) the command is run from
 const args = parseArgs(process.argv.slice(2));
@@ -32,6 +33,11 @@ const TODAY = new Date().getFullYear() * 10000 + (new Date().getMonth() + 1) * 1
 
 const config = JSON.parse(fs.readFileSync(path.join(ROOT, 'config', 'departments.json'), 'utf8'));
 const credentials = loadCredentials();
+// The head office password is kept apart from the department logins (see lib/admin-credentials.mjs).
+const ADMIN_SCOPE = 'dept';
+const adminPassword = loadAdminPassword(config.admin.id);
+if (adminPassword) credentials[`${config.admin.id}|${ADMIN_SCOPE}`] = adminPassword;
+else console.warn(`No ADMIN_CREDENTIALS: the head office (${config.admin.id}) department file is not built.`);
 
 // ---------- department matching ----------
 const OTHERS_ID = 'OTHERS';
@@ -45,7 +51,7 @@ const keywordRules = config.keywordRules.map(r => {
 });
 const excludeRes = config.exclude.stakeholderOrContact.map(p => new RegExp(p, 'i'));
 
-const missingCreds = [config.admin.id, ...config.departments.map(d => d.id)].filter(id => !credentials[id]);
+const missingCreds = config.departments.map(d => d.id).filter(id => !credentials[id]);
 if (missingCreds.length) fail(`No password for: ${missingCreds.join(', ')}.\nRun "npm run credentials" or set DEPT_CREDENTIALS.`);
 
 // ---------- columnar store ----------
@@ -118,8 +124,8 @@ const updatedFrom = sourceUpdated ? 'release' : 'build';
 const sourceNote = args.note || '';
 
 const summary = [];
-const targets = [{ id: config.admin.id, name: config.admin.name, filter: null }]
-  .concat(config.departments.map(d => ({ id: d.id, name: d.name, filter: d.id })));
+const targets = config.departments.map(d => ({ id: d.id, name: d.name, filter: d.id }));
+if (adminPassword) targets.unshift({ id: config.admin.id, name: config.admin.name, filter: null, admin: true });
 
 for (const t of targets) {
   const deptCode = t.filter ? dicts.dept.get(t.filter) : null;
@@ -127,9 +133,13 @@ for (const t of targets) {
   const payload = buildPayload(t, rows);
   const json = Buffer.from(JSON.stringify(payload));
   const gz = zlib.gzipSync(json, { level: 9 });
-  const enc = encrypt(gz, t.id);
-  const file = fileNameFor(t.id);
-  fs.writeFileSync(path.join(TMP_OUT, file), enc);
+  // The head office file goes to admin/public/admin/data (keyed "GTM-ADMIN|dept"), not to the department site.
+  const keyId = t.admin ? `${t.id}|${ADMIN_SCOPE}` : t.id;
+  const outDir = t.admin ? ADMIN_OUT : TMP_OUT;
+  const enc = encrypt(gz, keyId);
+  const file = fileNameFor(keyId);
+  if (t.admin) fs.mkdirSync(outDir, { recursive: true });
+  fs.writeFileSync(path.join(outDir, file), enc);
   const seed = rows.reduce((a, r) => a + r[9], 0);
   const recs = rows.reduce((a, r) => a + r[10], 0);
 
@@ -143,7 +153,8 @@ for (const t of targets) {
       byDistrict.get(district).push(...list);
     }
   }
-  for (const [district, list] of byDistrict) {
+  // The head office page shows totals only, so it gets no record files.
+  for (const [district, list] of (t.admin ? new Map() : byDistrict)) {
     const dz = zlib.gzipSync(Buffer.from(JSON.stringify(detailPayload(district, list))), { level: 9 });
     const denc = encrypt(dz, t.id);
     fs.writeFileSync(path.join(TMP_OUT, fileNameFor(`${t.id}|${district}`)), denc);

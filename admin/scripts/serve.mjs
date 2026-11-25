@@ -25,9 +25,19 @@ const TYPES = { '.html': 'text/html; charset=utf-8', '.css': 'text/css', '.js': 
   '.woff2': 'font/woff2', '.png': 'image/png', '.bin': 'application/octet-stream', '.txt': 'text/plain', '.json': 'application/json' };
 
 http.createServer((req, res) => {
-  let url = decodeURIComponent(new URL(req.url, 'http://x').pathname);
-  if (/^\/admin\/?$/.test(url)) url = '/schemes/index.html'; // head office sign-in, as the live rewrite does
+  const url = decodeURIComponent(new URL(req.url, 'http://x').pathname);
   let file, root, headers;
+
+  // /admin is the head office page: it lives in admin/public/admin (same as the live site)
+  if (url === '/admin' || url.startsWith('/admin/')) {
+    root = path.join(ADMIN_ROOT, 'public');
+    file = path.join(root, url);
+    if (fs.existsSync(file) && fs.statSync(file).isDirectory()) file = path.join(file, 'index.html');
+    if (!fs.existsSync(file) || !file.startsWith(root)) { res.writeHead(404, { 'content-type': 'text/plain' }); res.end('Not found'); return; }
+    res.writeHead(200, { ...SITE_HEADERS.admin, 'content-type': TYPES[path.extname(file)] || 'application/octet-stream', 'cache-control': 'no-cache' });
+    fs.createReadStream(file).pipe(res);
+    return;
+  }
 
   if (url === '/' || url === '/index.html') {
     root = path.join(ADMIN_ROOT, 'public');

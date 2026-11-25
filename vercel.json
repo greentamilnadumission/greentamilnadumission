@@ -4,10 +4,6 @@
   "installCommand": "echo \"No dependencies\"",
   "buildCommand": "node admin/scripts/build-site.mjs",
   "ignoreCommand": "node admin/scripts/should-build.mjs",
-  "rewrites": [
-    { "source": "/admin", "destination": "/schemes/index.html" },
-    { "source": "/admin/", "destination": "/schemes/index.html" }
-  ],
   "outputDirectory": "dist",
   "headers": [
     {

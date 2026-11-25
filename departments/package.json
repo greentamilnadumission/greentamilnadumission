@@ -11,6 +11,7 @@
     "update": "node ../admin/scripts/update-local.mjs",
     "credentials": "node ../admin/scripts/generate-credentials.mjs",
     "scheme-credentials": "node ../admin/scripts/generate-scheme-credentials.mjs",
+    "admin-credentials": "node ../admin/scripts/generate-admin-credentials.mjs",
     "build:data": "node ../admin/scripts/build-data.mjs --input merged.csv.gz",
     "build:scheme-data": "node ../admin/scripts/build-scheme-data.mjs --input merged.csv.gz",
     "serve": "node ../admin/scripts/serve.mjs"
