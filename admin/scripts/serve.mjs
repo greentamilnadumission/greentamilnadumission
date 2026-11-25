@@ -25,7 +25,8 @@ const TYPES = { '.html': 'text/html; charset=utf-8', '.css': 'text/css', '.js': 
   '.woff2': 'font/woff2', '.png': 'image/png', '.bin': 'application/octet-stream', '.txt': 'text/plain', '.json': 'application/json' };
 
 http.createServer((req, res) => {
-  const url = decodeURIComponent(new URL(req.url, 'http://x').pathname);
+  let url = decodeURIComponent(new URL(req.url, 'http://x').pathname);
+  if (/^\/admin\/?$/.test(url)) url = '/schemes/index.html'; // head office sign-in, as the live rewrite does
   let file, root, headers;
 
   if (url === '/' || url === '/index.html') {

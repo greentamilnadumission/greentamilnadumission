@@ -62,12 +62,16 @@
     await openDistrict(state.district);
   });
 
+  /** The head office goes back to /admin, every scheme to the scheme dashboard. */
+  function homePage(s) { return s && s.allSchemes ? '/admin' : 'index.html'; }
+
   function setupPage() {
     const s = state.summary;
     $('#rp-view').hidden = false;
     $('#rp-scheme').textContent = s.title;
     $('#rp-updated').textContent = `${s.updatedFrom === 'build' ? 'Data built' : 'Data updated'} ${Fmt.updated(s.updated)}`;
     $('#rp-scheme-wrap').hidden = !s.allSchemes;
+    $('#rp-back').href = homePage(s);
 
     const params = new URLSearchParams(location.search);
     const districts = s.dict.district.filter(Boolean).sort((a, b) => a.localeCompare(b));
@@ -130,7 +134,7 @@
     $('#rp-dialog-close').addEventListener('click', () => $('#rp-dialog').close());
     $('#rp-dialog').addEventListener('click', e => { if (e.target === e.currentTarget) e.currentTarget.close(); });
     $('#rp-export').addEventListener('click', exportCsv);
-    $('#rp-sign-out').addEventListener('click', () => { Vault.signOut(); location.href = 'index.html'; });
+    $('#rp-sign-out').addEventListener('click', () => { const home = homePage(state.summary); Vault.signOut(); location.href = home; });
   }
 
   // ======================================================================

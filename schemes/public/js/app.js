@@ -31,6 +31,9 @@
   };
   const VIEW_KEY = 'gtm-scheme-dashboard-view';
   const LEDGER_KEY = 'gtm-scheme-ledger-open';
+  // One page serves two sign-ins: /schemes/ takes scheme logins, and /admin (head office) takes the
+  // all-schemes login. Each page refuses the other's login, and the scheme page never mentions /admin.
+  const ADMIN_PAGE = /^\/admin\/?$/.test(location.pathname);
 
   // ======================================================================
   // Start-up and sign-in
@@ -39,15 +42,17 @@
   document.addEventListener('DOMContentLoaded', async () => {
     drawLoginArt();
     wireLogin();
+    if (ADMIN_PAGE) applyAdminCopy();
     if (!window.Vault || !Vault.supported()) {
       showLogin('This browser can\'t open the dashboard. Use a recent version of Chrome, Edge, Firefox or Safari.');
       $('#login-submit').disabled = true;
       return;
     }
-    busy('Opening your scheme\'s data…');
+    busy(ADMIN_PAGE ? 'Opening the head office data…' : 'Opening your scheme\'s data…');
     try {
-      const data = await Vault.resume();
+      let data = await Vault.resume();
       busy(false);
+      if (data && !matchesPage(data)) { Vault.signOut(); data = null; } // a scheme session on /admin, or the reverse
       if (data && goNext()) return;
       if (data) start(data); else showLogin();
     } catch (e) {
@@ -79,6 +84,7 @@
       busy('Checking your login and opening your data…');
       try {
         const data = await Vault.signIn(id, pw);
+        if (!matchesPage(data)) { Vault.signOut(); throw new Vault.VaultError('credentials'); }
         $('#login-password').value = '';
         if (goNext()) return;
         busy(false);
@@ -97,6 +103,16 @@
         btn.textContent = 'Sign in';
       }
     });
+  }
+
+  /** /admin takes only the all-schemes (head office) login; /schemes/ takes only scheme logins. */
+  function matchesPage(data) { return !!data.allSchemes === ADMIN_PAGE; }
+
+  function applyAdminCopy() {
+    document.title = 'Head office sign-in | GTM Dashboard';
+    $('#login-title').textContent = 'Head office dashboard';
+    $('#login-lede').textContent = 'Sign in with the head office login ID and password. You\'ll see the plantings for all schemes, district by district.';
+    $('#login-id').placeholder = 'GTM-ADMIN';
   }
 
   /** After sign-in, return to the records page if that's where the person was going. */
