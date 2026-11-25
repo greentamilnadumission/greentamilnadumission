@@ -13,7 +13,7 @@ import zlib from 'node:zlib';
 import crypto from 'node:crypto';
 import { parseCsv } from './lib/csv.mjs';
 import * as C from './lib/clean.mjs';
-import { loadAdminPassword, ADMIN_OUT } from './lib/admin-credentials.mjs';
+import { loadAdminPassword, ADMIN_DATA } from './lib/admin-credentials.mjs';
 
 const ROOT = process.cwd(); // the project folder (departments/ or schemes/) the command is run from
 const args = parseArgs(process.argv.slice(2));
@@ -28,9 +28,9 @@ const TODAY = new Date().getFullYear() * 10000 + (new Date().getMonth() + 1) * 1
 const config = JSON.parse(fs.readFileSync(path.join(ROOT, 'config', 'schemes.json'), 'utf8'));
 const credentials = loadCredentials();
 // The head office password is kept apart from the scheme logins (see lib/admin-credentials.mjs).
-const ADMIN_SCOPE = 'scheme';
+const ADMIN_OUT = ADMIN_DATA.scheme;
 const adminPassword = loadAdminPassword(config.admin.id);
-if (adminPassword) credentials[`${config.admin.id}|${ADMIN_SCOPE}`] = adminPassword;
+if (adminPassword) credentials[config.admin.id] = adminPassword;
 else console.warn(`No ADMIN_CREDENTIALS: the head office (${config.admin.id}) scheme file is not built.`);
 
 const schemeById = new Map(config.schemes.map(s => [s.id, s]));
@@ -105,12 +105,11 @@ for (const t of targets) {
   const payload = buildPayload(t, rows);
   const json = Buffer.from(JSON.stringify(payload));
   const gz = zlib.gzipSync(json, { level: 9 });
-  // The head office file goes to admin/public/admin/data (keyed "GTM-ADMIN|scheme"), not to the scheme site.
-  const keyId = t.admin ? `${t.id}|${ADMIN_SCOPE}` : t.id;
+  // The head office data goes to its own folder (see ADMIN_DATA), not to the scheme site.
   const outDir = t.admin ? ADMIN_OUT : TMP_OUT;
-  const enc = encrypt(gz, keyId);
-  const file = fileNameFor(keyId);
-  if (t.admin) fs.mkdirSync(outDir, { recursive: true });
+  if (t.admin) { fs.rmSync(outDir, { recursive: true, force: true }); fs.mkdirSync(outDir, { recursive: true }); }
+  const enc = encrypt(gz, t.id);
+  const file = fileNameFor(t.id);
   fs.writeFileSync(path.join(outDir, file), enc);
   const seed = rows.reduce((a, r) => a + r[9], 0);
   const recs = rows.reduce((a, r) => a + r[10], 0);
@@ -124,11 +123,10 @@ for (const t of targets) {
       byDistrict.get(district).push(...list);
     }
   }
-  // The head office page shows totals only, so it gets no record files.
-  for (const [district, list] of (t.admin ? new Map() : byDistrict)) {
+  for (const [district, list] of byDistrict) {
     const dz = zlib.gzipSync(Buffer.from(JSON.stringify(detailPayload(district, list))), { level: 9 });
     const denc = encrypt(dz, t.id);
-    fs.writeFileSync(path.join(TMP_OUT, fileNameFor(`${t.id}|${district}`)), denc);
+    fs.writeFileSync(path.join(outDir, fileNameFor(`${t.id}|${district}`)), denc);
     detailBytes += denc.length; detailFiles++;
   }
   summary.push({ id: t.id, name: t.name, records: recs, seedlings: seed, file, kb: Math.round(enc.length / 1024),
@@ -136,6 +134,7 @@ for (const t of targets) {
 }
 
 fs.writeFileSync(path.join(TMP_OUT, 'version.json'), JSON.stringify({ updated, updatedFrom }) + '\n');
+if (adminPassword) fs.writeFileSync(path.join(ADMIN_OUT, 'version.json'), JSON.stringify({ updated, updatedFrom }) + '\n');
 fs.rmSync(FINAL_OUT, { recursive: true, force: true });
 fs.renameSync(TMP_OUT, FINAL_OUT);
 

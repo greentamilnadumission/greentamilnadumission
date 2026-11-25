@@ -31,6 +31,8 @@
   };
   const VIEW_KEY = 'gtm-scheme-dashboard-view';
   const LEDGER_KEY = 'gtm-scheme-ledger-open';
+  // The head office copy of this dashboard lives under /admin/ and is the only place the all-schemes login works.
+  const HEAD_OFFICE = location.pathname.startsWith('/admin/');
 
   // ======================================================================
   // Start-up and sign-in
@@ -48,7 +50,7 @@
     try {
       let data = await Vault.resume();
       busy(false);
-      if (data && data.allSchemes) { Vault.signOut(); data = null; } // the head office login has its own page
+      if (data && data.allSchemes && !HEAD_OFFICE) { Vault.signOut(); data = null; } // the head office login has its own page
       if (data && goNext()) return;
       if (data) start(data); else showLogin();
     } catch (e) {
@@ -80,7 +82,7 @@
       busy('Checking your login and opening your data…');
       try {
         const data = await Vault.signIn(id, pw);
-        if (data.allSchemes) { Vault.signOut(); throw new Vault.VaultError('credentials'); } // head office login: refused here
+        if (data.allSchemes && !HEAD_OFFICE) { Vault.signOut(); throw new Vault.VaultError('credentials'); } // head office login: refused here
         $('#login-password').value = '';
         if (goNext()) return;
         busy(false);

@@ -29,4 +29,24 @@ fs.mkdirSync(DIST, { recursive: true });
 fs.cpSync(path.join(REPO, 'admin', 'public'), DIST, { recursive: true });
 fs.cpSync(path.join(REPO, 'departments', 'public'), path.join(DIST, 'departments'), { recursive: true });
 fs.cpSync(path.join(REPO, 'schemes', 'public'), path.join(DIST, 'schemes'), { recursive: true });
+// Head office copies of both dashboards: the same code, reading only the head office data that the
+// builds wrote to admin/public/admin/<departments|schemes>/data. The normal login data is left out.
+copyDashboard('departments', 'admin/departments');
+copyDashboard('schemes', 'admin/schemes');
 console.log('\nSite assembled in dist/');
+
+function copyDashboard(project, target) {
+  const src = path.join(REPO, project, 'public');
+  const dest = path.join(DIST, ...target.split('/'));
+  fs.cpSync(src, dest, { recursive: true, filter: f => !(path.dirname(f) === src && path.basename(f) === 'data') });
+  const index = path.join(dest, 'index.html');
+  const html = fs.readFileSync(index, 'utf8');
+  const from = `<base href="/${project}/">`;
+  if (!html.includes(from)) fail(`${project}/public/index.html has no ${from}, so the head office copy would read the wrong data.`);
+  fs.writeFileSync(index, html.replace(from, `<base href="/${target}/">`));
+}
+
+function fail(msg) {
+  console.error(`\n✗ ${msg}\n`);
+  process.exit(1);
+}
