@@ -10,25 +10,45 @@
   <link rel="stylesheet" href="admin.css">
 </head>
 <body>
-  <header class="bar">
-    <div>
-      <p class="org">Green Tamil Nadu Mission</p>
-      <h1>Head office dashboard</h1>
-    </div>
-  </header>
 
-  <main class="hub">
-    <p class="lede">Choose a dashboard. Each one asks for the head office login ID and password (GTM-ADMIN).</p>
-    <div class="cards">
-      <a class="card-link" href="departments/">
-        <h2>Departments</h2>
-        <p>Every department's plantings, district by district, with planting records and the map.</p>
-      </a>
-      <a class="card-link" href="schemes/">
-        <h2>Schemes</h2>
-        <p>Every scheme's plantings, district by district, with planting records and the map.</p>
-      </a>
-    </div>
+  <!-- Head office sign-in: the password is used for both dashboards, and is kept only in this page's memory -->
+  <main id="login-view" class="login">
+    <header class="bar"><span class="org">Green Tamil Nadu Mission</span></header>
+    <section class="panel-login">
+      <h1>Head office dashboard</h1>
+      <p class="lede">Sign in with the head office login ID and password. You'll see the overall department and scheme details.</p>
+      <form id="login-form" novalidate>
+        <label for="login-id">Login ID</label>
+        <input id="login-id" name="username" autocomplete="username" autocapitalize="characters" spellcheck="false" value="GTM-ADMIN" required>
+        <label for="login-password">Password</label>
+        <input id="login-password" name="password" type="password" autocomplete="current-password" required>
+        <p id="login-error" class="error" role="alert" hidden></p>
+        <button type="submit" id="login-submit">Sign in</button>
+      </form>
+    </section>
   </main>
+
+  <!-- Side menu and dashboards -->
+  <div id="app-view" class="app" hidden>
+    <aside class="side">
+      <p class="side-org">Green Tamil Nadu Mission</p>
+      <p class="side-title">Head office</p>
+      <nav aria-label="Dashboards">
+        <button type="button" class="nav" data-section="dept" aria-pressed="false">Departments</button>
+        <button type="button" class="nav" data-section="scheme" aria-pressed="false">Schemes</button>
+      </nav>
+      <button type="button" id="sign-out" class="signout">Sign out</button>
+    </aside>
+    <div class="stage">
+      <iframe id="frame-dept" class="frame" title="Departments dashboard" hidden></iframe>
+      <iframe id="frame-scheme" class="frame" title="Schemes dashboard" hidden></iframe>
+    </div>
+  </div>
+
+  <div id="busy" class="busy" role="status" aria-live="polite" hidden>
+    <p id="busy-text">Opening the dashboard…</p>
+  </div>
+
+  <script src="admin.js" defer></script>
 </body>
 </html>
