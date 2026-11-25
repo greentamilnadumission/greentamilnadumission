@@ -89,12 +89,15 @@
         start(data);
       } catch (e) {
         busy(false);
+        console.error(e);
         const local = /^(localhost|127\.0\.0\.1|\[::1\])$/.test(location.hostname);
         showError(e.kind === 'network'
           ? 'Couldn\'t reach the dashboard server. Check your connection and try again.'
           : e.status === 404 && local
             ? 'No data file was found for this login ID. On your own computer, run "npm run build:data" first so the public/data folder exists, or check the login ID.'
-            : 'That login ID and password don\'t match. Check both and try again.');
+            : e instanceof Vault.VaultError
+              ? 'That login ID and password don\'t match. Check both and try again.'
+              : `The dashboard couldn't open its data: ${e && e.message ? e.message : e}`);
         $('#login-password').select();
       } finally {
         btn.disabled = false;

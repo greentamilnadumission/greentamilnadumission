@@ -73,7 +73,7 @@
       const app = doc.getElementById('app-view');
       if (app && !app.hidden) { signedIn.add(key); return; }
       const err = doc.getElementById('login-error');
-      if (submitted && err && !err.hidden) { failed(); return; }
+      if (submitted && err && !err.hidden) { failed(err.textContent); return; }
       const loginView = doc.getElementById('login-view');
       if (!submitted && loginView && !loginView.hidden) {
         doc.getElementById('login-id').value = LOGIN_ID;
@@ -85,13 +85,13 @@
     }
   }
 
-  /** The password did not open this dashboard: ask for it again. */
-  function failed() {
+  /** The dashboard could not open with this password (or failed while opening): show its message here and ask again. */
+  function failed(message) {
     password = null;
     signedIn.clear();
     $('#app-view').hidden = true;
     $('#login-view').hidden = false;
-    showError('That password doesn\'t match. Check the head office login ID and password and try again.');
+    showError(message || 'That password doesn\'t match. Check the head office login ID and password and try again.');
     $('#login-password').focus();
   }
 
