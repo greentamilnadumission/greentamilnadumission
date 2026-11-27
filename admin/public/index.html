@@ -6,20 +6,31 @@
   <meta name="robots" content="noindex, nofollow">
   <title>Green Tamil Nadu Mission</title>
   <style>
-    :root { --green: #2e7d32; --green-dark: #1b5e20; --ink: #1d2b1f; --bg: #f3f8f2; }
+    :root { --green: #2e7d32; --green-dark: #1b5e20; --ink: #1d2b1f; --bg: #e6f1e4; }
     * { box-sizing: border-box; }
     body { margin: 0; min-height: 100vh; display: flex; align-items: center; justify-content: center;
-      font-family: "Segoe UI", system-ui, sans-serif; color: var(--ink); background: var(--bg); padding: 1.5rem; }
-    main { width: 100%; max-width: 760px; text-align: center; }
+      font-family: "Segoe UI", system-ui, sans-serif; color: var(--ink); padding: 1.5rem; position: relative; overflow-x: hidden;
+      background: linear-gradient(135deg, #eaf5e6 0%, #f7f3e3 50%, #dcefe0 100%); }
+    /* soft colour behind the glass cards, so the glass effect shows */
+    body::before, body::after { content: ""; position: fixed; z-index: -1; border-radius: 50%; filter: blur(60px); opacity: .55; pointer-events: none; }
+    body::before { width: 420px; height: 420px; top: -120px; left: -100px; background: #7cc47f; }
+    body::after { width: 380px; height: 380px; bottom: -120px; right: -80px; background: #f2c14e; }
+    main { width: 100%; max-width: 980px; text-align: center; position: relative; }
     .logos { display: flex; justify-content: center; gap: 1rem; margin-bottom: 1rem; }
     .logos img { height: 72px; width: auto; }
     .logos img[hidden] { display: none; }
     h1 { margin: 0 0 .4rem; font-size: clamp(1.6rem, 4vw, 2.2rem); }
     p.lede { margin: 0 0 2rem; color: #4a5d4c; }
-    .choices { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.25rem; }
-    a.card { display: block; text-decoration: none; color: inherit; background: #fff; border: 2px solid transparent;
-      border-radius: 14px; padding: 2rem 1.5rem; box-shadow: 0 2px 10px rgba(0,0,0,.08); transition: transform .15s, border-color .15s; }
-    a.card:hover, a.card:focus-visible { transform: translateY(-3px); border-color: var(--green); outline: none; }
+    .choices { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.25rem; }
+    /* glass cards: translucent, blurred background, light edge */
+    a.card { display: block; text-decoration: none; color: inherit; border: 1px solid rgba(255,255,255,.7);
+      background: rgba(255,255,255,.38); -webkit-backdrop-filter: blur(16px) saturate(160%); backdrop-filter: blur(16px) saturate(160%);
+      border-radius: 18px; padding: 2rem 1.5rem; box-shadow: 0 8px 32px rgba(31,80,38,.12), inset 0 1px 0 rgba(255,255,255,.6);
+      transition: transform .15s, border-color .15s, background .15s; }
+    @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+      a.card { background: rgba(255,255,255,.92); }
+    }
+    a.card:hover, a.card:focus-visible { transform: translateY(-3px); border-color: var(--green); background: rgba(255,255,255,.5); outline: none; }
     a.card h2 { margin: .5rem 0 .4rem; color: var(--green-dark); font-size: 1.4rem; }
     a.card p { margin: 0; color: #4a5d4c; font-size: .95rem; }
     a.card svg { width: 44px; height: 44px; fill: none; stroke: var(--green); stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
@@ -47,6 +58,12 @@
         <h2>Schemes</h2>
         <p>Sign in with your scheme's login to see the plantings reported under that scheme.</p>
         <span class="go">Scheme login</span>
+      </a>
+      <a class="card" href="/admin/">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l8 3v6c0 4.5-3.4 8.3-8 9-4.6-.7-8-4.5-8-9V6l8-3ZM9 12l2 2 4-4"/></svg>
+        <h2>Head office</h2>
+        <p>Head office login to see the overall department and scheme dashboards.</p>
+        <span class="go">Head office login</span>
       </a>
     </div>
     <footer>Lost your login? Contact the Green Tamil Nadu Mission office.</footer>
