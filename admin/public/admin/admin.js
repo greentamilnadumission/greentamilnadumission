@@ -10,6 +10,11 @@
     dept: { frame: '#frame-dept', src: '/admin/departments/' },
     scheme: { frame: '#frame-scheme', src: '/admin/schemes/' },
   };
+  // The side menu lists, and opens, one department or scheme; the dashboards read the choice from the URL.
+  const SUB = {
+    dept: { list: '#sub-dept', param: 'dept', select: 'filter-dept' },
+    scheme: { list: '#sub-scheme', param: 'scheme', select: 'filter-scheme' },
+  };
   const SIGN_IN_TIMEOUT_MS = 180000; // the data can take 20 to 30 seconds on a slow connection
   const $ = sel => document.querySelector(sel);
   const sleep = ms => new Promise(r => setTimeout(r, ms));
@@ -27,10 +32,10 @@
       $('#login-password').value = '';
       $('#login-view').hidden = true;
       $('#app-view').hidden = false;
-      show('dept');
+      openPick('dept', null);
     });
 
-    document.querySelectorAll('.nav').forEach(b => b.addEventListener('click', () => show(b.dataset.section)));
+    document.querySelectorAll('.nav').forEach(b => b.addEventListener('click', () => openPick(b.dataset.section, null)));
 
     for (const [key, d] of Object.entries(DASHBOARDS)) {
       $(d.frame).addEventListener('load', () => onFrameLoad(key));
@@ -45,11 +50,38 @@
   });
 
   function show(key) {
-    const d = DASHBOARDS[key];
-    const frame = $(d.frame);
-    if (!frame.getAttribute('src')) frame.src = d.src; // loads the dashboard the first time it is opened
     for (const [k, other] of Object.entries(DASHBOARDS)) $(other.frame).hidden = k !== key;
     document.querySelectorAll('.nav').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.section === key)));
+  }
+
+  /** Shows one dashboard, for everything (name = null) or for one department or scheme from the side menu. */
+  function openPick(key, name) {
+    show(key);
+    const frame = $(DASHBOARDS[key].frame);
+    const url = name === null ? `${DASHBOARDS[key].src}?all=1` : `${DASHBOARDS[key].src}?${SUB[key].param}=${encodeURIComponent(name)}`;
+    if (frame.getAttribute('src') !== url) frame.src = url;
+    document.querySelectorAll(`${SUB[key].list} button`).forEach(b =>
+      b.setAttribute('aria-current', String((name || '') === b.dataset.name)));
+  }
+
+  /** Fills one side menu with "All" plus every department or scheme in that dashboard's own dropdown. */
+  function buildMenu(key, doc) {
+    const list = $(SUB[key].list);
+    const select = doc.getElementById(SUB[key].select);
+    if (!select || list.childElementCount) return;
+    const add = (text, name) => {
+      const li = document.createElement('li');
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.textContent = text;
+      b.dataset.name = name;
+      b.addEventListener('click', () => openPick(key, name === '' ? null : name));
+      li.appendChild(b);
+      list.appendChild(li);
+    };
+    add(key === 'dept' ? 'All departments' : 'All schemes', '');
+    const names = [...select.options].slice(1).map(o => o.textContent.trim()).filter(n => n && n !== 'Not specified');
+    for (const n of names) add(n, n);
   }
 
   async function onFrameLoad(key) {
@@ -71,7 +103,7 @@
     while (Date.now() - started < SIGN_IN_TIMEOUT_MS) {
       if (frame.contentDocument !== doc) return; // the frame moved on to another page
       const app = doc.getElementById('app-view');
-      if (app && !app.hidden) { signedIn.add(key); return; }
+      if (app && !app.hidden) { signedIn.add(key); buildMenu(key, doc); return; }
       const err = doc.getElementById('login-error');
       if (submitted && err && !err.hidden) { failed(err.textContent); return; }
       const loginView = doc.getElementById('login-view');

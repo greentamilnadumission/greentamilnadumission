@@ -34,8 +34,14 @@
       <p class="side-org">Green Tamil Nadu Mission</p>
       <p class="side-title">Head office</p>
       <nav aria-label="Dashboards">
-        <button type="button" class="nav" data-section="dept" aria-pressed="false">Departments</button>
-        <button type="button" class="nav" data-section="scheme" aria-pressed="false">Schemes</button>
+        <div class="nav-group">
+          <button type="button" class="nav" data-section="dept" aria-pressed="false">Departments</button>
+          <ul class="sub" id="sub-dept" aria-label="Departments"></ul>
+        </div>
+        <div class="nav-group">
+          <button type="button" class="nav" data-section="scheme" aria-pressed="false">Schemes</button>
+          <ul class="sub" id="sub-scheme" aria-label="Schemes"></ul>
+        </div>
       </nav>
       <button type="button" id="sign-out" class="signout">Sign out</button>
     </aside>

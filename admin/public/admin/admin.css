@@ -26,6 +26,13 @@ form input { width: 100%; padding: .6rem .7rem; border: 1px solid #c9d6c8; borde
 .nav { display: block; width: 100%; text-align: left; background: transparent; color: #fff; border: 0; border-radius: 8px; padding: .65rem .8rem; font: inherit; cursor: pointer; }
 .nav:hover { background: rgba(255,255,255,.1); }
 .nav[aria-pressed="true"] { background: #fff; color: var(--green-dark); font-weight: 600; }
+.nav-group { display: flex; flex-direction: column; }
+.sub { list-style: none; margin: .15rem 0 .6rem; padding: 0 0 0 .6rem; max-height: 38vh; overflow-y: auto; border-left: 1px solid rgba(255,255,255,.25); }
+.sub:empty { display: none; }
+.sub li { margin: 0; }
+.sub button { display: block; width: 100%; text-align: left; background: transparent; color: rgba(255,255,255,.88); border: 0; border-radius: 6px; padding: .4rem .6rem; font: inherit; font-size: .88rem; cursor: pointer; }
+.sub button:hover { background: rgba(255,255,255,.1); }
+.sub button[aria-current="true"] { background: rgba(255,255,255,.22); color: #fff; font-weight: 600; }
 .signout { margin-top: auto; background: transparent; color: #fff; border: 1px solid rgba(255,255,255,.6); border-radius: 8px; padding: .5rem; font: inherit; cursor: pointer; }
 .stage { flex: 1; min-width: 0; height: 100%; }
 .frame { width: 100%; height: 100%; border: 0; display: block; }

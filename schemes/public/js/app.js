@@ -33,6 +33,8 @@
   const LEDGER_KEY = 'gtm-scheme-ledger-open';
   // The head office copy of this dashboard lives under /admin/ and is the only place the all-schemes login works.
   const HEAD_OFFICE = location.pathname.startsWith('/admin/');
+  // Head office only: the side menu opens one scheme with ?scheme=<name>, or everything with ?all=1.
+  const HEAD_PARAMS = new URLSearchParams(location.search);
 
   // ======================================================================
   // Start-up and sign-in
@@ -197,7 +199,7 @@
     readColors();
     setupCharts();
     wireApp();
-    restoreView();
+    if (HEAD_OFFICE) pickFromMenu(); else restoreView();
     setLedgerOpen(readLedgerOpen());
     trackFilterHeight();
     setupMapWhenVisible();
@@ -213,6 +215,14 @@
     if (state.range.from) view.from = state.range.from;
     if (state.range.to) view.to = state.range.to;
     try { sessionStorage.setItem(VIEW_KEY, JSON.stringify(view)); } catch (e) { /* not essential */ }
+  }
+
+  /** Head office only: applies the scheme chosen in the side menu (?scheme=<name>). ?all=1 shows every scheme. */
+  function pickFromMenu() {
+    const name = HEAD_PARAMS.get('scheme');
+    if (!name) return;
+    const code = state.dict.scheme.indexOf(name);
+    if (code >= 0) state.filters.scheme = code;
   }
 
   function restoreView() {

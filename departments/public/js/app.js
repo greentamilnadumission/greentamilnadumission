@@ -31,6 +31,9 @@
   };
   const VIEW_KEY = 'gtm-dashboard-view';
   const LEDGER_KEY = 'gtm-ledger-open';
+  // On the head office page, the side menu opens one department with ?dept=<name>, or everything with ?all=1.
+  const HEAD_OFFICE = location.pathname.startsWith('/admin/');
+  const HEAD_PARAMS = new URLSearchParams(location.search);
 
   // ======================================================================
   // Start-up and sign-in
@@ -193,7 +196,7 @@
     readColors();
     setupCharts();
     wireApp();
-    restoreView();
+    if (HEAD_OFFICE) pickFromMenu(); else restoreView();
     setLedgerOpen(readLedgerOpen());
     trackFilterHeight();
     setupMapWhenVisible();
@@ -209,6 +212,14 @@
     if (state.range.from) view.from = state.range.from;
     if (state.range.to) view.to = state.range.to;
     try { sessionStorage.setItem(VIEW_KEY, JSON.stringify(view)); } catch (e) { /* not essential */ }
+  }
+
+  /** Head office only: applies the department chosen in the side menu (?dept=<name>). ?all=1 shows every department. */
+  function pickFromMenu() {
+    const name = HEAD_PARAMS.get('dept');
+    if (!name) return;
+    const code = state.dict.dept.indexOf(name);
+    if (code >= 0) state.filters.dept = code;
   }
 
   function restoreView() {
